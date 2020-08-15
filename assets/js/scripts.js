@@ -1,28 +1,26 @@
-
-
-$(document).ready(function(){
+$(document).ready(function () {
 
     var reloadSave = false;
     var filterInput = $("#filterInput");
     filterInput.val("");
 
-    function filter(search){
+    function filter(search) {
 
-        if(!search)search = "";
+        if (!search) search = "";
 
         var onlyActive = $("#onlyActiveFilter").is(":checked");
         var onlyFavorite = $("#onlyFavoriteFilter").is(":checked");
+        var showHidden = $("#showHiddenFilter").is(":checked");
 
-        var resaltar = function(busqueda, contenido, claseCSSbusqueda){
-            var regex = new RegExp("(<[^>]*>)|("+ busqueda.replace(/([-.*+?^${}()|[\]\/\\])/g,"\\$1") +')', 'ig');
+        var resaltar = function (busqueda, contenido, claseCSSbusqueda) {
+            var regex = new RegExp("(<[^>]*>)|(" + busqueda.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1") + ')', 'ig');
 
-            var returnStr = contenido.replace(regex, function(a, b, c){
-                return (a.charAt(0) == "<") ? a : "<span class=\""+ claseCSSbusqueda +"\">" + c + "</span>";
-            })
-            return returnStr;
+            return contenido.replace(regex, function (a, b, c) {
+                return (a.charAt(0) === "<") ? a : "<span class=\"" + claseCSSbusqueda + "\">" + c + "</span>";
+            });
         }
 
-        $("#bodyTable").find(".rowHost").each(function(a, b){
+        $("#bodyTable").find(".rowHost").each(function (a, b) {
 
             var domainContent = $(b).find(".tdDomainContent");
             var directionContent = $(b).find(".tdDirectionContent");
@@ -30,48 +28,52 @@ $(document).ready(function(){
             var domain = $(b).attr("data-domain");
             var direction = $(b).attr("data-direction");
 
-            if(search != ""){
+            if (search !== "") {
 
                 var findDomain = domain.includes(search);
                 var findDirection = direction.includes(search);
 
-                if(!findDomain && !findDirection){
+                if (!findDomain && !findDirection) {
                     $(b).addClass("hideRowByFilter");
                     directionContent.html(direction);
                     domainContent.html(domain);
                 }
-                else{
+                else {
                     directionContent.html(resaltar(search, direction, "hightlightSearch"));
                     domainContent.html(resaltar(search, domain, "hightlightSearch"));
                     $(b).removeClass("hideRowByFilter");
                 }
             }
-            else{
+            else {
                 directionContent.html(direction);
                 domainContent.html(domain);
                 $(b).removeClass("hideRowByFilter");
             }
 
-            if(onlyActive){
-                if(!$(b).hasClass("active")){
+            if (onlyActive) {
+                if (!$(b).hasClass("active")) {
                     $(b).addClass("hideRowByFilter");
                 }
             }
-            if(onlyFavorite){
-                if(!$(b).find(".favorite").first().hasClass("favoriteActive")){
+            if (onlyFavorite) {
+                if (!$(b).find(".favorite").first().hasClass("favoriteActive")) {
                     $(b).addClass("hideRowByFilter");
                 }
             }
-
+            if (!showHidden) {
+                if ($(b).find(".setHidden").first().hasClass("hiddenActive")) {
+                    $(b).addClass("hideRowByFilter");
+                }
+            }
         });
     }
 
-    function clearFilter(){
+    function clearFilter() {
         filterInput.val("").focus();
         filter("");
     }
 
-    function updatePreferences(){
+    function updatePreferences() {
 
         toastr.remove()
 
@@ -82,39 +84,52 @@ $(document).ready(function(){
         preferences["favorite"] = {};
         preferences["tags"] = {};
         preferences["tags_group"] = {};
+        preferences["hidden"] = {};
 
         //Save preferences
-        $(".updatePreference").each(function(a, b){
+        $(".updatePreference").each(function (a, b) {
 
             var type = $(b).attr("data-preference");
 
-            if(type == "only_active" || type == "only_favorite"){
+            if (type === "only_active" || type === "only_favorite") {
                 preferences[type] = $(b).is(":checked");
             }
-            else if(type == "favorite"){
+            else if (type === "favorite") {
 
-                if($(b).hasClass("favoriteActive")){
-                    var domain = $(b).attr("data-domain");
-                    var direction = $(b).attr("data-direction");
-                    var favoriteKey = domain+"_"+direction
+                if ($(b).hasClass("favoriteActive")) {
+                    const domain = $(b).attr("data-domain");
+                    const direction = $(b).attr("data-direction");
+                    const favoriteKey = domain + "_" + direction
 
                     preferences["favorite"][favoriteKey] = {};
                     preferences["favorite"][favoriteKey]["domain"] = domain;
                     preferences["favorite"][favoriteKey]["direction"] = direction;
                 }
             }
+            else if (type === "set_hidden") {
+
+                if ($(b).hasClass("hiddenActive")) {
+                    const domain = $(b).attr("data-domain");
+                    const direction = $(b).attr("data-direction");
+                    const favoriteKey = domain + "_" + direction
+
+                    preferences["hidden"][favoriteKey] = {};
+                    preferences["hidden"][favoriteKey]["domain"] = domain;
+                    preferences["hidden"][favoriteKey]["direction"] = direction;
+                }
+            }
         })
 
         //Save tags
-        $(".rowHost").each(function(a, b){
+        $(".rowHost").each(function (a, b) {
             var domain = $(b).attr("data-domain");
             var direction = $(b).attr("data-direction");
-            var tagKey = domain+"_"+direction
+            var tagKey = domain + "_" + direction
 
             preferences["tags"][tagKey] = {};
 
-            $(b).find(".tagItem").each(function(c, d){
-                if(typeof preferences["tags"][tagKey][c] === "undefined"){
+            $(b).find(".tagItem").each(function (c, d) {
+                if (typeof preferences["tags"][tagKey][c] === "undefined") {
                     preferences["tags"][tagKey][c] = {};
                 }
                 preferences["tags"][tagKey][c]["text"] = $(d).attr("data-text");
@@ -123,13 +138,13 @@ $(document).ready(function(){
         });
 
         //Save group tags
-        $(".rowHostDirectionTitle").each(function(a, b){
+        $(".rowHostDirectionTitle").each(function (a, b) {
             var tagKey = $(b).attr("data-group");
 
             preferences["tags_group"][tagKey] = {};
 
-            $(b).find(".tagItem").each(function(c, d){
-                if(typeof preferences["tags_group"][tagKey][c] === "undefined"){
+            $(b).find(".tagItem").each(function (c, d) {
+                if (typeof preferences["tags_group"][tagKey][c] === "undefined") {
                     preferences["tags_group"][tagKey][c] = {};
                 }
                 preferences["tags_group"][tagKey][c]["text"] = $(d).attr("data-text");
@@ -142,23 +157,21 @@ $(document).ready(function(){
             url: "index.php",
             data: preferences,
             method: "post",
-            success: function(data){
-                if(data == "1"){
-                    toastr.success('Preferencias guardadas :D', 'Éxitoooo', {timeOut: 1000})
+            success: function (data) {
+                if (parseInt(data) === 1) {
+                    toastr.success('Preferencias guardadas', '', {timeOut: 1000})
                 }
-                else{
-                    toastr.error('Error al actualizar preferencias, ni idea de lo que pasó :$', '¡Upss!')
+                else {
+                    toastr.error('Error al actualizar preferencias', '¡Upss!')
                 }
             },
-            error: function(){
-                toastr.error('Error al actualizar preferencias, ni idea de lo que pasó :$', '¡Upss!')
+            error: function () {
+                toastr.error('Error al actualizar preferencias', '¡Upss!')
             }
         })
-
-        //console.log(preferences);
     }
 
-    function addNew(){
+    function addNew() {
 
         var addNew = $("#addNewRowDirection");
         var addDomain = $("#addNewRowDomain");
@@ -167,8 +180,8 @@ $(document).ready(function(){
         var addNewRowDomain = addDomain.val().trim();
 
         //Si están vacías
-        if(addNewRowDomain != "" && addNewRowDirection != ""){
-            var row = '<tr class="rowHost" data-domain="'+addNewRowDomain+'" data-direction="'+addNewRowDirection+'">\
+        if (addNewRowDomain != "" && addNewRowDirection != "") {
+            var row = '<tr class="rowHost" data-domain="' + addNewRowDomain + '" data-direction="' + addNewRowDirection + '">\
                        <td class="text-center">\
                            <label class="switch">\
                            <input class="enableHost" type="checkbox" value="1" checked="checked">\
@@ -177,12 +190,12 @@ $(document).ready(function(){
                        </td>\
                        <td class="text-center">\
                            <span class="favorito">\
-                                <i class="fas fa-star updatePreference favorite" data-preference="favorite" data-domain="'+addNewRowDomain+'" data-direction="'+addNewRowDirection+'"></i>\
+                                <i class="fas fa-star updatePreference favorite" data-preference="favorite" data-domain="' + addNewRowDomain + '" data-direction="' + addNewRowDirection + '"></i>\
                            </span>\
                        </td>\
                        <td class="text-center tagsContainer"></td>\
-                       <td class="tdDirectionContent">'+addNewRowDirection+'</td>\
-                       <td class="tdDomainContent">'+addNewRowDomain+'</td>\
+                       <td class="tdDirectionContent">' + addNewRowDirection + '</td>\
+                       <td class="tdDomainContent">' + addNewRowDomain + '</td>\
                        <td class="text-center">\
                            <i class="fas fa-tags tagsHost"></i>\
                            <i class="fas fa-trash-alt deleteHost"></i>\
@@ -195,27 +208,27 @@ $(document).ready(function(){
             addDomain.val("");
 
             //save the id
-            var idRow = addNewRowDomain+"_"+addNewRowDirection;
+            var idRow = addNewRowDomain + "_" + addNewRowDirection;
             localStorage.setItem('host_last_saved', idRow);
             reloadSave = true;
 
             saveHosts();
         }
-        else{
+        else {
             toastr.error('Hay que llenar bien los campos...', '¡No haga eso compa!')
         }
     }
 
-    function eventsEnable(){
+    function eventsEnable() {
 
-        $(".tagsHost").unbind("click").on("click", function(e){
+        $(".tagsHost").unbind("click").on("click", function (e) {
 
             var self = this;
 
-            var getTagEditor = function(tagText, tagColor){
+            var getTagEditor = function (tagText, tagColor) {
 
-                if(!tagText)tagText = "";
-                if(!tagColor)tagColor = "";
+                if (!tagText) tagText = "";
+                if (!tagColor) tagColor = "";
 
                 var colors = {
                     "#F95800": "Orange",
@@ -241,13 +254,13 @@ $(document).ready(function(){
                                     <div class="input-group-prepend">\
                                         <span class="input-group-text">Label</span>\
                                     </div>\
-                                    <input type="text" class="textTag form-control" value="'+tagText+'">\
+                                    <input type="text" class="textTag form-control" value="' + tagText + '">\
                                     <select type="text" class="colorTag form-control">';
 
-                $.each(colors, function(a, b){
+                $.each(colors, function (a, b) {
                     var selected = "";
-                    if(a == tagColor)selected = "selected='selected'";
-                    tagEditor += '<option value="'+a+'" style="background: '+a+'" '+selected+'>'+b+'</option>';
+                    if (a == tagColor) selected = "selected='selected'";
+                    tagEditor += '<option value="' + a + '" style="background: ' + a + '" ' + selected + '>' + b + '</option>';
                 });
 
                 tagEditor += '</select>\
@@ -257,8 +270,8 @@ $(document).ready(function(){
                 return tagEditor;
             };
 
-            var trashEvents = function(modal){
-                modal.$content.find('.trashTag').unbind("click").click(function(){
+            var trashEvents = function (modal) {
+                modal.$content.find('.trashTag').unbind("click").click(function () {
                     $(this).parent().remove();
                 });
             };
@@ -274,10 +287,10 @@ $(document).ready(function(){
 
                             var tags = "";
 
-                            this.$content.find('.tagRow').each(function(a, b){
+                            this.$content.find('.tagRow').each(function (a, b) {
                                 var textTag = $(b).find(".textTag").val();
                                 var colorTag = $(b).find(".colorTag").val();
-                                tags += "<div class='tagItem' data-text='"+textTag+"' data-color='"+colorTag+"' style='background: "+colorTag+"'>"+textTag+"</div>"
+                                tags += "<div class='tagItem' data-text='" + textTag + "' data-color='" + colorTag + "' style='background: " + colorTag + "'>" + textTag + "</div>"
                             });
 
                             $(self).parent().parent().find(".tagsContainer").html("").append(tags);
@@ -294,7 +307,7 @@ $(document).ready(function(){
 
                     var contentTagRow = modal.$content.find('.tagContainerEditor');
 
-                    $(self).parent().parent().find(".tagsContainer").find(".tagItem").each(function(a, b){
+                    $(self).parent().parent().find(".tagsContainer").find(".tagItem").each(function (a, b) {
                         var textTag = $(b).attr("data-text");
                         var colorTag = $(b).attr("data-color");
                         contentTagRow.append(getTagEditor(textTag, colorTag));
@@ -308,7 +321,7 @@ $(document).ready(function(){
                 }
             });
         });
-        $(".deleteHost").unbind("click").on("click", function(e){
+        $(".deleteHost").unbind("click").on("click", function (e) {
 
             var self = this;
 
@@ -320,29 +333,33 @@ $(document).ready(function(){
                         $(self).parent().parent().remove();
                         saveHosts();
                     },
-                    cancelar: function () {}
+                    cancelar: function () {
+                    }
                 }
             });
         });
-        $(".updatePreference").unbind("click").on("click", function(e){
+        $(".updatePreference").unbind("click").on("click", function (e) {
 
             //clase para favoritos
             var type = $(this).attr("data-preference");
-            if(type == "favorite"){
+            if (type === "favorite") {
                 $(this).toggleClass("favoriteActive");
+            }
+            if (type === "set_hidden") {
+                $(this).toggleClass("hiddenActive");
             }
             updatePreferences();
             filter(filterInput.val());
         });
-        $(".enableHost").unbind("change").change(function(){
+        $(".enableHost").unbind("change").change(function () {
 
             var rowParent = $(this).parent().parent().parent();
 
             //clase para favoritos
-            if($(this).is(":checked")){
+            if ($(this).is(":checked")) {
                 rowParent.addClass("active");
             }
-            else{
+            else {
                 rowParent.removeClass("active");
             }
 
@@ -354,32 +371,32 @@ $(document).ready(function(){
         var lastSaved = localStorage.getItem('host_last_saved');
         var rowAdded = document.getElementById(lastSaved);
 
-        if(lastSaved !== null && lastSaved !== "" && $(rowAdded).length > 0){
+        if (lastSaved !== null && lastSaved !== "" && $(rowAdded).length > 0) {
             //add class for last added
             $(rowAdded).addClass("rowHostSaved");
 
             //scroll to row
             $('html, body').animate({
-                scrollTop: $(rowAdded).offset().top-300
+                scrollTop: $(rowAdded).offset().top - 300
             }, 0);
 
             localStorage.setItem('host_last_saved', null);
 
-            setTimeout(function(){
+            setTimeout(function () {
                 $(rowAdded).removeClass("rowHostSaved");
             }, 5000);
         }
     }
 
-    function saveHosts(){
+    function saveHosts() {
         var data = {};
         data["hosts"] = {};
 
         toastr.remove()
 
-        $("#bodyTable").find(".rowHost").each(function(a, b){
+        $("#bodyTable").find(".rowHost").each(function (a, b) {
 
-            if(typeof data["hosts"][a] === "undefined"){
+            if (typeof data["hosts"][a] === "undefined") {
                 data["hosts"][a] = {};
             }
 
@@ -396,39 +413,39 @@ $(document).ready(function(){
             url: "index.php",
             data: data,
             method: "post",
-            success: function(data){
-                if(data == "1"){
-                    if(reloadSave){
-                        window.location.href="index.php";
+            success: function (data) {
+                if (data == "1") {
+                    if (reloadSave) {
+                        window.location.href = "index.php";
                     }
-                    else{
+                    else {
                         toastr.success('Archivo actualizado con éxito', ':D')
                     }
                 }
-                else{
+                else {
                     toastr.error('Error al actualizar el archivo, quizás valió madres todo :$', '¡Upss!')
                 }
             },
-            error: function(){
+            error: function () {
                 toastr.error('Error al actualizar el archivo, quizás valió madres todo :$', '¡Upss!')
             }
         })
     }
 
-    $("#addNewRow").on("click", function(e){
+    $("#addNewRow").on("click", function (e) {
         addNew();
     });
 
-    filterInput.on("keyup", function(e){
+    filterInput.on("keyup", function (e) {
         var value = $(this).val();
         filter(value);
     }).focus();
 
-    $("#filterClear").on("click", function(e){
+    $("#filterClear").on("click", function (e) {
         clearFilter();
     });
 
-    $("#openFile").on("click", function(e){
+    $("#openFile").on("click", function (e) {
         window.open("index.php?openFile=true");
     });
 

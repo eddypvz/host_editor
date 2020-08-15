@@ -1,24 +1,24 @@
 <?php
-function dd($var){
+function dd($var) {
     print "<pre>";
     print_r($var);
     print "</pre>";
 }
 
-function getPreferences(){
-    if(file_exists("preferences.db")){
+function getPreferences() {
+    if (file_exists("preferences.db")) {
         $preferences = trim(file_get_contents("preferences.db"));
 
         $response = @json_decode($preferences, true);
 
-        if(is_array($response)){
+        if (is_array($response)) {
             return $response;
         }
-        else{
+        else {
             return [];
         }
     }
-    else{
+    else {
         //creo el archivo de preferencias
         $fh = fopen("preferences.db", 'w') or die("La carpeta donde se encuentra el proyecto no tiene permiso para escritura de archivo de preferencias");
         fclose($fh);
@@ -26,31 +26,31 @@ function getPreferences(){
     }
 }
 
-function getHost(){
+function getHost() {
     global $arrConfig;
 
     $arrHost = [];
 
-    if(file_exists("config.conf")){
+    if (file_exists("config.conf")) {
 
         $conf = trim(file_get_contents("config.conf"));
 
-        if(file_exists($conf)){
+        if (file_exists($conf)) {
 
             $file = fopen($conf, "r") or exit("Error al leer el archivo \"{$conf}\", verifica tus permisos de lectura o que el archivo exista");
 
             $count = 0;
-            while(!feof($file)){
+            while (!feof($file)) {
 
                 $lineHostRaw = trim(fgets($file));
 
-                if($lineHostRaw != ""){
+                if ($lineHostRaw != "") {
                     $active = (substr($lineHostRaw, 0, 1) != "#");
 
-                    if($active){
+                    if ($active) {
                         $lineHost = substr($lineHostRaw, 0, strlen($lineHostRaw));
                     }
-                    else{
+                    else {
                         $lineHost = substr($lineHostRaw, 1, strlen($lineHostRaw));
                     }
                     $direction = substr($lineHost, 0, strrpos($lineHost, " "));
@@ -60,6 +60,7 @@ function getHost(){
                     $arrHost[$count]["direction"] = trim($direction);
                     $arrHost[$count]["domain"] = trim($domain);
                     $arrHost[$count]["favorite"] = false;
+                    $arrHost[$count]["hidden"] = false;
                     $arrHost[$count]["tags"] = [];
 
                     //Key para favoritos y tags
@@ -68,15 +69,22 @@ function getHost(){
                     $arrHost[$count]["id"] = $keyTMP;
 
                     //Favoritos
-                    if(isset($arrConfig["favorite"])){
-                        if(array_key_exists($keyTMP, $arrConfig["favorite"])){
+                    if (isset($arrConfig["favorite"])) {
+                        if (array_key_exists($keyTMP, $arrConfig["favorite"])) {
                             $arrHost[$count]["favorite"] = true;
                         }
                     }
 
+                    //Hidden
+                    if (isset($arrConfig["hidden"])) {
+                        if (array_key_exists($keyTMP, $arrConfig["hidden"])) {
+                            $arrHost[$count]["hidden"] = true;
+                        }
+                    }
+
                     //Tags
-                    if(isset($arrConfig["tags"])){
-                        if(array_key_exists($keyTMP, $arrConfig["tags"])){
+                    if (isset($arrConfig["tags"])) {
+                        if (array_key_exists($keyTMP, $arrConfig["tags"])) {
                             $arrHost[$count]["tags"] = $arrConfig["tags"][$keyTMP];
                         }
                     }
@@ -86,22 +94,21 @@ function getHost(){
             fclose($file);
 
 
-
             //sort host by domain
-            usort($arrHost, function($a, $b) {
+            usort($arrHost, function ($a, $b) {
                 return $a['domain'] > $b['domain'];
             });
 
 
             //order by ip
             $arrHostByIP = [];
-            foreach($arrHost as $item){
+            foreach ($arrHost as $item) {
                 $arrHostByIP[$item["direction"]]["_group_tags"] = [];
                 $arrHostByIP[$item["direction"]][] = $item;
 
                 //search tags by group
-                if(isset($arrConfig["tags_group"])){
-                    if(array_key_exists($item["direction"], $arrConfig["tags_group"])){
+                if (isset($arrConfig["tags_group"])) {
+                    if (array_key_exists($item["direction"], $arrConfig["tags_group"])) {
                         $arrHostByIP[$item["direction"]]["_group_tags"] = $arrConfig["tags_group"][$item["direction"]];
                     }
                 }
@@ -109,69 +116,69 @@ function getHost(){
 
             return $arrHostByIP;
         }
-        else{
+        else {
             die("El archivo \"{$conf}\" no existe o no tiene permisos para lectura");
         }
     }
-    else{
+    else {
         die("El archivo \"config.conf\" no existe o no tiene permisos para lectura");
     }
 }
 
 
-function saveHost($data = []){
+function saveHost($data = []) {
 
     $stringContentFile = "";
 
-    foreach($data as $hostItem){
-        $enable = ($hostItem["enable"] == "false")?"#":"";
+    foreach ($data as $hostItem) {
+        $enable = ($hostItem["enable"] == "false") ? "#" : "";
         $stringContentFile .= "{$enable}{$hostItem["direction"]}    {$hostItem["domain"]}\r\n";
     }
 
-    if(file_exists("config.conf")){
+    if (file_exists("config.conf")) {
 
         $conf = trim(file_get_contents("config.conf"));
 
-        if(file_exists($conf)){
+        if (file_exists($conf)) {
             return file_put_contents($conf, $stringContentFile);
         }
-        else{
+        else {
             return false;
         }
     }
-    else{
+    else {
         return false;
     }
 }
 
-function savePreferences($data = []){
+function savePreferences($data = []) {
 
     $stringContentFile = json_encode($data);
 
-    if(file_exists("preferences.db")){
+    if (file_exists("preferences.db")) {
         return file_put_contents("preferences.db", $stringContentFile);
     }
-    else{
+    else {
         return false;
     }
 }
 
-function openFile(){
+function openFile() {
 
-    if(file_exists("config.conf")){
+    if (file_exists("config.conf")) {
 
         $fileHost = trim(file_get_contents("config.conf"));
 
-        if(file_exists($fileHost)){
+        if (file_exists($fileHost)) {
             $host = "Archivo cargado: {$fileHost}<br><br>";
             $host .= trim(file_get_contents($fileHost));
             return $host;
         }
-        else{
+        else {
             die("El archivo \"{$fileHost}\" no existe o no tiene permisos para lectura");
         }
     }
-    else{
+    else {
         die("El archivo \"config.conf\" no existe o no tiene permisos para lectura");
     }
 }

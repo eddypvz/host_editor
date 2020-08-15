@@ -16,7 +16,7 @@ body{
 
 .filterContent{
     text-align: center;
-    font-size: 1.2em;
+    font-size: 1em;
     display: inline-block;
     margin: 0 20px;
     vertical-align: middle;
@@ -168,8 +168,13 @@ body{
 .favorito:hover{
     color: #a8a8a8;
 }
+
 .favoriteActive{
     color: #ffce00;
+}
+
+.hiddenActive{
+    color: #0088ff;
 }
 
 .addNewRowContent{
