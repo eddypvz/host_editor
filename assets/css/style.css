@@ -1,82 +1,96 @@
 
+h1 {
+    font-size: 2em;
+}
 
+label {
+    margin-bottom: 0;
+}
 
-input[type=checkbox]{
+input[type=checkbox] {
     cursor: pointer;
 }
 
-body{
+body {
     position: relative;
 }
 
-.container{
+.container-host {
     position: relative;
+    margin: auto;
     margin-bottom: 3%;
+    background: white;
+    max-width: 1400px;
 }
 
-.filterContent{
+.filterContent {
     text-align: center;
     font-size: 1em;
     display: inline-block;
     margin: 0 20px;
     vertical-align: middle;
 }
-.filterContent i{
+
+.filterContent i {
     margin: 0 10px;
 }
 
-.headerFilter{
+.headerFilter {
+    background: #f8f8f8;
     position: fixed;
     top: 0;
-    background: #f6f6f6;
     padding: 15px 10% 0 10%;
     width: 100%;
     z-index: 1;
+    border-bottom: solid 1px #efefef;
 }
 
-#filterClear{
-    font-size: 1.3em;
+#filterClear {
+    font-size: 1.1em;
     height: auto;
 }
 
-.filterInput{
-    font-size: 1.5em;
+.filterInput {
+    font-size: 1.1em;
     padding: 3px 20px;
     height: auto;
 }
 
-.openFile{
+.openFile {
     cursor: pointer;
 }
-.openFile:hover{
+
+.openFile:hover {
     color: #069bff;
     text-decoration: underline;
 }
 
-.hostTable{
+.hostTable {
     margin-top: 180px;
 }
 
-.col-min{
+.col-min {
     width: 1%;
 }
 
-.rowHostDirectionTitle{
+.rowHostDirectionTitle {
     font-weight: bold;
     font-size: 15px;
     color: #3c3c3c;
-    background: #efefef;
+    background: #dee2e6;
 }
-.rowHostDirectionTitle td{
+
+.rowHostDirectionTitle td {
     padding: 5px 25px;
 }
 
-.rowHostSaved{
-    background: #d8f6d9!important;
+.rowHostSaved {
+    background: #d8f6d9 !important;
     padding: 0;
     margin: 0;
 }
-.rowHost{
+
+.rowHost {
     padding: 0;
     margin: 0;
     -webkit-transition: all 0.2s ease-out;
@@ -84,43 +98,50 @@ body{
     -o-transition: all 0.2s ease-out;
     transition: all 0.2s ease-out;
 }
-.rowHost td{
+
+.rowHost td {
     padding: 10px 5px 5px 5px;
     margin: 0;
 }
-.rowHost label{
+
+.rowHost label {
     padding: 0;
     margin: 0;
 }
-.rowHost:hover{
+
+.rowHost:hover {
     background: #fafafa;
 }
 
-.deleteHost{
+.deleteHost {
     color: #bdbdbd;
     cursor: pointer;
 }
-.deleteHost:hover{
+
+.deleteHost:hover {
     color: red;
 }
-.tagsHost{
+
+.tagsHost {
     color: #bdbdbd;
     cursor: pointer;
 }
-.tagsHost:hover{
+
+.tagsHost:hover {
     color: #008dff;
 }
 
-.trashTag{
+.trashTag {
     margin: 10px 10px;
     color: #d7d7d7;
     cursor: pointer;
 }
-.trashTag:hover{
+
+.trashTag:hover {
     color: red;
 }
 
-.addTagRow{
+.addTagRow {
     margin-top: 10px;
     color: #00ae00;
     cursor: pointer;
@@ -128,23 +149,28 @@ body{
     padding: 2px;
     font-size: 14px;
 }
-.addTagRow span{
+
+.addTagRow span {
     margin-right: 5px;
 }
-.addTagRow:hover{
+
+.addTagRow:hover {
     color: #008b00;
 }
-.tagRow{
+
+.tagRow {
     margin-bottom: 10px;
 }
-.colorTag{
+
+.colorTag {
     cursor: pointer;
 }
-.colorTag option{
+
+.colorTag option {
     color: white;
 }
 
-.tagItem{
+.tagItem {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
@@ -155,39 +181,40 @@ body{
     display: inline-block;
 }
 
-.hideRowByFilter{
+.hideRowByFilter {
     display: none;
 }
 
-.favorito{
+.favorito {
     vertical-align: top;
     font-size: 1.2em;
     color: #d7d7d7;
     cursor: pointer;
 }
-.favorito:hover{
+
+.favorito:hover {
     color: #a8a8a8;
 }
 
-.favoriteActive{
+.favoriteActive {
     color: #ffce00;
 }
 
-.hiddenActive{
+.hiddenActive {
     color: #0088ff;
 }
 
-.addNewRowContent{
-    background: #dfdfdf;
+.addNewRowContent {
+    background: #dee2e6;
 }
 
-.hightlightSearch{
+.hightlightSearch {
     color: #ff0000;
     text-decoration: underline;
     font-weight: bold;
 }
 
-footer{
+footer {
     margin-top: 3%;
     padding: 3px;
     background: #3a3a3a;
@@ -198,12 +225,10 @@ footer{
     bottom: 0;
     width: 100%;
 }
-footer i{
+
+footer i {
     margin: 0 5px;
 }
-
-
-
 
 
 /* The switch - the box around the slider */
@@ -215,7 +240,9 @@ footer i{
 }
 
 /* Hide default HTML checkbox */
-.switch input {display:none;}
+.switch input {
+    display: none;
+}
 
 /* The slider */
 .slider {

@@ -81,17 +81,18 @@ $(document).ready(function () {
         preferences["save_preferences"] = true;
         preferences["only_active"] = false;
         preferences["only_favorite"] = false;
+        preferences["show_hidden"] = false;
         preferences["favorite"] = {};
+        preferences["hidden"] = {};
         preferences["tags"] = {};
         preferences["tags_group"] = {};
-        preferences["hidden"] = {};
 
         //Save preferences
         $(".updatePreference").each(function (a, b) {
 
             var type = $(b).attr("data-preference");
 
-            if (type === "only_active" || type === "only_favorite") {
+            if (type === "only_active" || type === "only_favorite" || type === "show_hidden") {
                 preferences[type] = $(b).is(":checked");
             }
             else if (type === "favorite") {
@@ -180,7 +181,7 @@ $(document).ready(function () {
         var addNewRowDomain = addDomain.val().trim();
 
         //Si están vacías
-        if (addNewRowDomain != "" && addNewRowDirection != "") {
+        if (addNewRowDomain !== "" && addNewRowDirection !== "") {
             var row = '<tr class="rowHost" data-domain="' + addNewRowDomain + '" data-direction="' + addNewRowDirection + '">\
                        <td class="text-center">\
                            <label class="switch">\
@@ -192,6 +193,10 @@ $(document).ready(function () {
                            <span class="favorito">\
                                 <i class="fas fa-star updatePreference favorite" data-preference="favorite" data-domain="' + addNewRowDomain + '" data-direction="' + addNewRowDirection + '"></i>\
                            </span>\
+                           &nbsp;\
+                            <span class="favorito">\
+                                <i class="fas fa-eye-slash updatePreference setHidden" data-preference="set_hidden" data-domain="' + addNewRowDomain + '" data-direction="' + addNewRowDirection + '"></i>\
+                            </span>\
                        </td>\
                        <td class="text-center tagsContainer"></td>\
                        <td class="tdDirectionContent">' + addNewRowDirection + '</td>\

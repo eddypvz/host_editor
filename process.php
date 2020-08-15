@@ -125,7 +125,6 @@ function getHost() {
     }
 }
 
-
 function saveHost($data = []) {
 
     $stringContentFile = "";

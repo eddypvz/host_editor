@@ -70,7 +70,7 @@ $arrHost = getHost();
         </div>
     </div>
 </header>
-<section class="container">
+<section class="container-host">
     <table class="table hostTable">
         <tbody id="bodyTable" class="bodyTable">
         <?php
