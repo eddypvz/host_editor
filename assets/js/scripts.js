@@ -154,7 +154,7 @@ $(document).ready(function () {
 
         //Send to save
         $.ajax({
-            url: "index.php",
+            url: "api.php",
             data: preferences,
             method: "post",
             success: function (data) {
@@ -162,11 +162,11 @@ $(document).ready(function () {
                     toastr.success('Preferencias guardadas', '', {timeOut: 1000})
                 }
                 else {
-                    toastr.error('Error al actualizar preferencias', '¡Upss!')
+                    toastr.error('Error al actualizar preferencias')
                 }
             },
             error: function () {
-                toastr.error('Error al actualizar preferencias', '¡Upss!')
+                toastr.error('Error al actualizar preferencias')
             }
         })
     }
@@ -215,7 +215,7 @@ $(document).ready(function () {
             saveHosts();
         }
         else {
-            toastr.error('Hay que llenar bien los campos...', '¡No haga eso compa!')
+            toastr.error('Por favor, verifique los campos a llenar')
         }
     }
 
@@ -327,7 +327,7 @@ $(document).ready(function () {
 
             $.confirm({
                 title: '¿Está seguro de eliminar?',
-                content: 'Despues va a estar chillando...',
+                content: 'Esta accion no se puede revertir',
                 buttons: {
                     confirmar: function () {
                         $(self).parent().parent().remove();
@@ -410,7 +410,7 @@ $(document).ready(function () {
         });
 
         $.ajax({
-            url: "index.php",
+            url: "api.php",
             data: data,
             method: "post",
             success: function (data) {
@@ -419,15 +419,15 @@ $(document).ready(function () {
                         window.location.href = "index.php";
                     }
                     else {
-                        toastr.success('Archivo actualizado con éxito', ':D')
+                        toastr.success('Archivo actualizado con éxito', '')
                     }
                 }
                 else {
-                    toastr.error('Error al actualizar el archivo, quizás valió madres todo :$', '¡Upss!')
+                    toastr.error('Error al actualizar el archivo, verifique permisos')
                 }
             },
             error: function () {
-                toastr.error('Error al actualizar el archivo, quizás valió madres todo :$', '¡Upss!')
+                toastr.error('Error al actualizar el archivo, verifique permisos')
             }
         })
     }
@@ -446,7 +446,7 @@ $(document).ready(function () {
     });
 
     $("#openFile").on("click", function (e) {
-        window.open("index.php?openFile=true");
+        window.open("api.php?openFile=true");
     });
 
     $("#addNewRowDirection").val("127.0.0.1");
